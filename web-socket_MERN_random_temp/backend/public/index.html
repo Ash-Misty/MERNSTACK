@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Live Weather IoT</title>
+
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+
+<body class="bg-slate-900 text-white min-h-screen flex flex-col items-center justify-center px-4">
+
+  <!-- Header -->
+  <div class="flex items-center gap-3 mb-8">
+    <img src="https://cdn-icons-png.flaticon.com/512/1163/1163661.png" class="w-10 h-10 md:w-12 md:h-12">
+    <h1 class="text-4xl md:text-5xl font-bold text-sky-400">Live IoT Weather</h1>
+  </div>
+
+  <!-- City Input -->
+  <div class="flex flex-col sm:flex-row gap-4 mb-6 w-full max-w-md">
+    <input
+      type="text"
+      id="cityInput"
+      placeholder="Enter city name..."
+      class="flex-1 px-4 py-3 rounded-lg text-black focus:ring-2 focus:ring-sky-400"
+    />
+  </div>
+
+  <!-- Weather Card -->
+  <div class="bg-slate-800/80 backdrop-blur-md shadow-xl rounded-2xl p-8 w-full max-w-md text-center space-y-3">
+    <h2 id="city" class="text-2xl font-semibold text-sky-300">City: --</h2>
+    <h3 id="temp" class="text-3xl font-bold">Temp: -- °C</h3>
+    <p id="humidity" class="text-lg">Humidity: --%</p>
+    <p id="desc" class="text-lg capitalize">Description: --</p>
+  </div>
+
+  <p class="text-sm text-slate-400 mt-6">Live data from ESP8266 via WebSocket </p>
+
+  <script>
+    let ws = new WebSocket("ws://localhost:3000");
+
+    ws.onopen = () => {
+      console.log("Connected to server");
+    };
+
+    ws.onmessage = (event) => {
+      const data = JSON.parse(event.data);
+
+      if (data.error) return;
+
+      document.getElementById("city").innerText = "City: " + data.city;
+      document.getElementById("temp").innerText = "Temp: " + data.temperature + " °C";
+      document.getElementById("humidity").innerText = "Humidity: " + data.humidity + "%";
+      document.getElementById("desc").innerText = "Description: " + data.description;
+    };
+
+    ws.onerror = (err) => console.log("WebSocket error", err);
+
+    // Continuously send city whenever user types
+    let debounceTimer;
+    const cityInput = document.getElementById("cityInput");
+
+    cityInput.addEventListener("input", () => {
+      clearTimeout(debounceTimer);
+      debounceTimer = setTimeout(() => {
+        const city = cityInput.value.trim();
+        if (city && ws.readyState === WebSocket.OPEN) {
+          ws.send(JSON.stringify({ cityRequest: city }));
+          console.log("City sent to ESP:", city);
+        }
+      }, 500); // wait 0.5s after typing stops
+    });
+  </script>
+
+</body>
+</html>
