@@ -4,7 +4,6 @@ const mongoose = require("mongoose");
 const cors = require("cors");
 const Weather = require("./models/Weather");
 
-// Connect to MongoDB
 mongoose.connect("mongodb://127.0.0.1:27017/weather_iot")
   .then(() => console.log("MongoDB Connected"))
   .catch(err => console.log("Mongo Error:", err));
@@ -18,11 +17,9 @@ const server = app.listen(3000, () =>
 
 const wss = new WebSocket.Server({ server });
 
-// Track clients
 let espClient = null;
 const browserClients = new Set();
 
-// Broadcast data to all React clients
 function broadcastToBrowsers(data) {
   browserClients.forEach(client => {
     if (client.readyState === WebSocket.OPEN) {
@@ -32,44 +29,81 @@ function broadcastToBrowsers(data) {
 }
 
 wss.on("connection", ws => {
-  console.log("🔌 New WebSocket connection");
+  console.log("New WebSocket connection");
 
-  // Assume browser client first
-  browserClients.add(ws);
-  console.log("Browser client registered");
+  ws.isESP = false;         
+  browserClients.add(ws);  
 
   ws.on("message", async msg => {
-    console.log(" RAW MESSAGE:", msg.toString());
+    // let data;
 
-    try {
-      const data = JSON.parse(msg);
+    // // Parse message
+    // try {
+    //   data = JSON.parse(msg.toString());
+    // } catch (err) {
+    //   console.log("Invalid message:", err.message);
+    //   return;
+    // }
 
-      // ESP registration
-      if (data.device === "esp8266") {
-        espClient = ws;
-        browserClients.delete(ws); // remove ESP from browser set
-        console.log("ESP Device Registered");
-        return;
-      }
+    // // ESP Registration
+    // if (data.device === "esp8266") {
+    //   ws.isESP = true;
+    //   espClient = ws;
+    //   browserClients.delete(ws); // ESP should not receive browser broadcasts
+    //   console.log("ESP Registered");
+    //   return;
+    // }
 
-      // Weather data from ESP
-      if (data.temperature) {
-        console.log(" Weather Received:", data);
+    // //Handle weather data FROM ESP ONLY
+    // if (ws.isESP && data.temperature !== undefined) {
+    //   console.log("Weather Received:", data);
 
-        try {
-          await Weather.create(data);
-          console.log("Saved to DB");
-        } catch (err) {
-          console.log(" DB Save Error:", err.message);
-        }
+    //   try {
+    //     await Weather.create(data);
+    //     console.log("Data saved to DB");
+    //   } catch (err) {
+    //     console.log("DB Save Error:", err.message);
+    //   }
 
-        broadcastToBrowsers(data);
-      }
+    //   broadcastToBrowsers(data);
+    //   return;
+    // }
 
-    } catch (err) {
-      console.log("Invalid message");
+    // console.log("Message ignored:", data);
+
+    
+    //  ESP IoT logic commented out 
+
+     const data = JSON.parse(msg);
+
+    //  ESP Registration
+    if (data.device === "esp8266") {
+      espClient = ws;
+      browserClients.delete(ws);
+      console.log("ESP Device Registered");
+      return;
     }
-  });
+
+    //City request from React
+    if (data.cityRequest) {
+      console.log("City requested:", data.cityRequest);
+      if (espClient && espClient.readyState === WebSocket.OPEN) {
+        espClient.send(JSON.stringify({ city: data.cityRequest }));
+      } else {
+        console.log("ESP not connected");
+      }
+      return;
+  }
+
+    //Weather from ESP
+    if (data.temperature) {
+      console.log("Weather received:", data);
+      await Weather.create(data);
+      broadcastToBrowsers(data);
+      return;
+    }
+    
+   });
 
   ws.on("close", () => {
     browserClients.delete(ws);
@@ -81,4 +115,4 @@ wss.on("connection", ws => {
 
     console.log("Client disconnected");
   });
-});
+  });

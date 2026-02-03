@@ -44,3 +44,14 @@ body {
   flex-wrap: wrap;
   justify-content: center;
 }
+.city-input {
+  padding: 10px;
+  border-radius: 8px;
+  margin-bottom: 15px;
+  border: none;
+  width: 260px;
+  text-align: center;
+}
+
+.status.online { color: #4ade80; }
+.status.offline { color: #f87171; }

@@ -4,8 +4,11 @@ import WeatherCard from "./components/WeatherCard";
 import "./App.css";
 
 function App() {
-  const [weatherHistory, setWeatherHistory] = useState([]); // [previous, latest]
+  const [weatherHistory, setWeatherHistory] = useState([]);
   const [connected, setConnected] = useState(false);
+
+  // City 
+   const [city, setCity] = useState("");
 
   useEffect(() => {
     const ws = new WebSocket("ws://localhost:3000");
@@ -20,8 +23,8 @@ function App() {
       console.log("Weather from server:", data);
 
       setWeatherHistory((prev) => {
-        const newHistory = [...prev, data]; // add new data
-        return newHistory.slice(-2);        // keep only last 2
+        const newHistory = [...prev, data];
+        return newHistory.slice(-2); // keep only last 2
       });
     };
 
@@ -29,6 +32,21 @@ function App() {
 
     return () => ws.close();
   }, []);
+
+  //  City  logic 
+  
+  useEffect(() => {
+    const ws = new WebSocket("ws://localhost:3000");
+    const timer = setTimeout(() => {
+      if (city && ws.readyState === WebSocket.OPEN) {
+        ws.send(JSON.stringify({ cityRequest: city }));
+        console.log("City sent:", city);
+      }
+    }, 500);
+
+    return () => clearTimeout(timer);
+  }, [city]);
+  
 
   const previous = weatherHistory[0];
   const latest = weatherHistory[1];
@@ -39,6 +57,17 @@ function App() {
         <BsCloudSunFill style={{ marginRight: "10px", color: "#facc15" }} />
         Live IoT Weather
       </h1>
+
+      {/* City Input  */}
+      
+      <input
+        type="text"
+        placeholder="Enter city..."
+        value={city}
+        onChange={(e) => setCity(e.target.value)}
+        className="city-input"
+      />
+      
 
       <div className={`status ${connected ? "online" : "offline"}`}>
         {connected ? "Device Stream Online" : "Waiting for device..."}
@@ -53,3 +82,4 @@ function App() {
 }
 
 export default App;
+  
