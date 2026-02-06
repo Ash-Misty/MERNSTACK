@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simple Form</title>
+</head>
+<body>
+    <div>
+        <form action="">
+            <h2>ToDo List</h2>
+            <div>
+                <input type="text" name="title" id="title" placeholder="Enter title:">
+                <input type="text" name="description" id="description" placeholder="Enter description:">
+            </div>
+            <div>
+                <button type="submit" onclick="todoSubmit()">Save</button>
+            </div>
+        </form>
+    </div>
+
+    <script>
+        async function todoSubmit(){
+            const API = "http://localhost:3000/todo";
+            const title = document.getElementById('title').value;
+            const description = document.getElementById('description').value;
+
+            await fetch(API, {
+                method:"POST",
+                headers: {
+                    "content-type": "application/json"
+                },
+                body: JSON.stringify({title, description})
+            });
+            console.log("Submitted successfully!");
+        }
+    </script>
+</body>
+</html>

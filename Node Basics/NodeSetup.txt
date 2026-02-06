@@ -1,0 +1,96 @@
+========NODE js setup and hello world using html tags:=========
+Download node using chrome.
+Check node version on cmd
+>>node --version
+
+Install nodemon on cmd
+>>npm install --save-dev nodemon
+
+go to package.json and check nodemon added in devdependencies
+
+edit package.json.. replace "test":"" with "start":"nodemon index.js"
+ 
+install express on cmd
+>>npm install express
+
+go to package.json and check express added in dependencies
+
+create index.js file
+paste the following code
+
+const express = require('express');
+const app = express();
+
+app.get('/', (request,response) => {
+	console.log("Hello World");//display in server terminal
+	response.send('<h2>Hello World</h2>'); // display on browser
+});
+
+app.listen(3000, ()=> console.log("Server Started")); //display in server terminal
+
+
+go to cmd run
+>>npm start
+
+goto browser type the url
+localhost:3000
+
+========hello world using html file:=========
+create index.js file
+paste the following code
+
+const express = require('express');
+const app = express();
+app.use(express.static('public'))//add this to make all the static files into server
+app.get('/', (request,response) => {
+	console.log("Hello World");//display in server terminal
+	respond.send('public/index.html')//html file
+});
+
+app.listen(3000, ()=> console.log("Server Started")); //display in server terminal
+
+create a file named public in which store all the html files, in this file named public create index.html
+paste the below code in index.html 
+
+<h2>Hello from .html</h2>
+
+go to cmd run
+>>npm start
+
+==========setting up mongo db=========
+step-1 in browser search mongodb install community version , check the box for mongodb compass and give install button
+step-2 in backend install mongoose package  
+       >>>>npm install mongoose
+step-3 connection steps for mongo db 
+         in index.js copy the following code
+		     mongoose.connect('mongodb://localhost:27017/<any collection name>')
+			 .then(()=>console.log('Db connected'));
+			 .catch((err)=>console.log(err));
+step-4 create schema
+    for a todo app
+	const todo=new mongoose.Schema({
+		title:{required:true,
+		type:String},
+		description: String
+	})
+step-5 create a model
+   for to do app
+   const todoModel=mongoose.model('Todo',todoSchema)
+
+=============post a data to mongo db===========
+
+step-6 POST method route add these in index.js
+        app.use(express.json())
+         app.post('/todo',async(req,res)=>
+	    {title,description}=req.body;
+		  try{
+			const newTodo =new todoModel({title,description})
+			await newTodo.save()
+			res.status(201).json(newTodo)
+		  })
+		  catch(error){
+			console.log(error)
+			res.status(500)
+		  }
+
+=============get  a data from mongo db===========
