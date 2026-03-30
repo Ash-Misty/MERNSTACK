@@ -1,0 +1,117 @@
+/* Global Reset & Base */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Inter', -apple-system, sans-serif;
+}
+
+.container {
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%);
+    padding: 20px;
+}
+
+/* The Landscape Frame */
+.card-wrapper {
+    background: white;
+    width: 100%;
+    max-width: 1000px;
+    /* Wide landscape width */
+    min-height: 600px;
+    display: flex;
+    flex-direction: column;
+    /* Stacked on mobile */
+    border-radius: 24px;
+    overflow: hidden;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.15);
+}
+
+/* Left Side: Visual / Branding */
+.card-visual {
+    flex: 1;
+    background: linear-gradient(135deg, #2563eb, #1d4ed8);
+    padding: 60px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    color: white;
+    text-align: left;
+}
+
+.card-visual h1 {
+    font-size: 36px;
+    font-weight: 800;
+    line-height: 1.2;
+    margin-bottom: 20px;
+}
+
+.card-visual p {
+    font-size: 18px;
+    opacity: 0.9;
+    line-height: 1.6;
+}
+
+/* Right Side: The Form */
+.card-form-container {
+    flex: 1.2;
+    padding: 60px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    background: white;
+}
+
+.card-form-container h2 {
+    font-size: 28px;
+    color: #1e293b;
+    margin-bottom: 8px;
+}
+
+.subtitle {
+    color: #64748b;
+    margin-bottom: 32px;
+    font-size: 16px;
+}
+
+/* Form Layout */
+.input-group {
+    margin-bottom: 20px;
+    text-align: left;
+}
+
+.input-group label {
+    display: block;
+    font-size: 14px;
+    font-weight: 600;
+    color: #475569;
+    margin-bottom: 8px;
+}
+
+.card-form-container input {
+    width: 100%;
+    padding: 14px;
+    border: 1.5px solid #e2e8f0;
+    border-radius: 12px;
+    font-size: 15px;
+    transition: all 0.2s ease;
+    background: #f8fafc;
+}
+
+.card-form-container input:focus {
+    outline: none;
+    border-color: #2563eb;
+    background: white;
+    box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1);
+}
+
+.card-form-container button {
+    width: 100%;
+    padding: 14px;
+    background: #2563eb;
+    color: white;
+    border: none;
+    border-radius: 12px;
