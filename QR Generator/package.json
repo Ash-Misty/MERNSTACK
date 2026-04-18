@@ -1,0 +1,26 @@
+{
+  "name": "smart-url-tool",
+  "version": "1.0.0",
+  "description": "Smart URL Tool with short links and QR code generation",
+  "main": "server/index.js",
+  "scripts": {
+    "start": "node server/index.js",
+    "dev": "node --watch server/index.js"
+  },
+  "keywords": [
+    "url-shortener",
+    "qr-code",
+    "express"
+  ],
+  "author": "",
+  "license": "MIT",
+  "engines": {
+    "node": ">=18"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2",
+    "qrcode": "^1.5.4"
+  }
+}

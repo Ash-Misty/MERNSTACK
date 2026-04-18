@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Smart URL Tool</title>
+    <link rel="icon" type="image/png" href="./cropped_circle_image.png" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <main class="app-shell">
+      <div class="bg-orb bg-orb-one"></div>
+      <div class="bg-orb bg-orb-two"></div>
+
+      <section class="hero">
+        <span class="hero-badge">Modern URL utilities</span>
+        <h1>Smart URL Tool</h1>
+        <p>Select an option below to get started.</p>
+      </section>
+
+      <section class="option-grid" id="toolPicker" aria-label="Generation type">
+        <button class="option-card active" data-type="short" type="button">
+          <span class="option-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" role="img">
+              <path
+                d="M10.59 13.41a1 1 0 0 1 0-1.41l3.3-3.3a3 3 0 0 1 4.24 4.24l-2.12 2.12a3 3 0 0 1-4.24 0 1 1 0 1 0-1.41 1.41 5 5 0 0 0 7.07 0l2.12-2.12a5 5 0 0 0-7.07-7.07l-3.3 3.3a1 1 0 0 1-1.41-1.41l3.3-3.3a7 7 0 1 1 9.9 9.9l-2.12 2.12a7 7 0 0 1-9.9 0 3 3 0 0 1 0-4.24a1 1 0 0 1 1.41 0Z"
+              />
+              <path
+                d="M13.41 10.59a1 1 0 0 1 0 1.41l-3.3 3.3a3 3 0 1 1-4.24-4.24l2.12-2.12a3 3 0 0 1 4.24 0 1 1 0 0 0 1.41-1.41 5 5 0 0 0-7.07 0L4.46 9.66a5 5 0 0 0 7.07 7.07l3.3-3.3a1 1 0 1 1 1.41 1.41l-3.3 3.3a7 7 0 0 1-9.9-9.9l2.12-2.12a7 7 0 0 1 9.9 0 3 3 0 0 1 0 4.24 1 1 0 0 1-1.41 0Z"
+              />
+            </svg>
+          </span>
+          <span class="option-title">Generate Short URL</span>
+          <span class="option-copy">Create a clean, shareable redirect link for any long URL.</span>
+          <span class="option-button">Choose short URL</span>
+        </button>
+
+        <button class="option-card" data-type="qr" type="button">
+          <span class="option-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" role="img">
+              <path
+                d="M3 3h8v8H3V3Zm2 2v4h4V5H5Zm8-2h8v8h-8V3Zm2 2v4h4V5h-4ZM3 13h8v8H3v-8Zm2 2v4h4v-4H5Zm8-2h2v2h-2v-2Zm2 2h2v2h-2v-2Zm2-2h2v4h-2v-4Zm-4 4h4v2h-2v2h-2v-4Zm6 0h2v4h-4v-2h2v-2Zm-6 4h2v2h-2v-2Z"
+              />
+            </svg>
+          </span>
+          <span class="option-title">Generate QR Code</span>
+          <span class="option-copy">Turn any link into a downloadable QR image for quick access.</span>
+          <span class="option-button">Choose QR code</span>
+        </button>
+      </section>
+
+      <section class="glass-card form-card panel-enter" id="inputSection">
+        <div class="section-header">
+          <div>
+            <p class="section-kicker">Input</p>
+            <h2 id="formHeading">Generate your short URL</h2>
+          </div>
+          <label class="toggle-card" for="bothToggle">
+            <input id="bothToggle" type="checkbox" />
+            <span class="toggle-indicator"></span>
+            <span class="toggle-copy">
+              <strong>Generate both outputs</strong>
+              <span>Keep the selected primary result and create the paired asset too.</span>
+            </span>
+          </label>
+        </div>
+
+        <form class="generator-form" id="generatorForm">
+          <label class="input-label" for="urlInput">Enter your long URL</label>
+          <div class="input-row">
+            <input
+              id="urlInput"
+              name="url"
+              type="url"
+              inputmode="url"
+              placeholder="https://example.com/very/long/link"
+              autocomplete="off"
+              required
+            />
+            <button class="primary-button" id="submitButton" type="submit">
+              Generate now
+            </button>
+          </div>
+          <p class="helper-text">Paste a valid `http://` or `https://` URL.</p>
+        </form>
+
+        <div class="status" id="statusMessage" aria-live="polite"></div>
+        <div class="spinner hidden" id="loadingSpinner" aria-hidden="true"></div>
+      </section>
+
+      <section class="result-modal hidden" id="resultsSection" aria-hidden="true">
+        <div class="result-backdrop" id="resultBackdrop"></div>
+        <div class="result-dialog glass-card panel-enter" role="dialog" aria-modal="true" aria-labelledby="resultDialogTitle">
+          <div class="modal-header">
+            <div>
+              <p class="section-kicker">Output</p>
+              <h2 id="resultDialogTitle">Generated result</h2>
+            </div>
+            <button class="modal-close" id="closeResultsButton" type="button" aria-label="Close results">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+
+          <div class="results">
+            <article class="result-panel hidden" id="shortResult">
+              <div class="result-topline">
+                <span class="result-badge">Short URL ready</span>
+                <span class="result-success">Success</span>
+              </div>
+              <h3>Generated link</h3>
+              <p class="result-description">Use this shorter version anywhere you want a cleaner share experience.</p>
+              <a id="shortUrlLink" class="result-link" href="#" target="_blank" rel="noreferrer"></a>
+              <div class="action-row">
+                <button class="secondary-button" id="copyButton" type="button">Copy link</button>
+                <button class="secondary-button" id="shareShortButton" type="button">Share</button>
+              </div>
+            </article>
+
+            <article class="result-panel hidden" id="qrResult">
+              <div class="result-topline">
+                <span class="result-badge">QR code ready</span>
+                <span class="result-success">Downloadable</span>
+              </div>
+              <h3>Generated QR code</h3>
+              <p class="result-description">Scan, download, or share the image directly from this panel.</p>
+              <div class="qr-frame">
+                <img id="qrImage" alt="Generated QR code" />
+              </div>
+              <div class="action-row">
+                <a class="secondary-button" id="downloadButton" download="smart-url-tool-qr.png">Download</a>
+                <button class="secondary-button" id="shareQrButton" type="button">Share</button>
+              </div>
+            </article>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <script src="./app.js"></script>
+  </body>
+</html>
